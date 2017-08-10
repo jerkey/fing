@@ -9,11 +9,6 @@ void R311::Init(HardwareSerial *serial)
   _r311Serial = serial;
   _r311Serial.begin(R311BAUDRATE);
   //attachInterrupt(R311_INTERRUPT,R311_isr,RISING);
-  Reset();
-}
-
-void R311::Reset()
-{
 }
 
 uint8_t R311::SelfTest()
