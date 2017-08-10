@@ -1,0 +1,24 @@
+00h: command execution complete
+01h: error when receiving data package
+02h: no finger on the sensor
+03h: failed to enroll the finger
+06h: failed to generate character file due to the over-disorderly fingerprint image
+07h: failed to generate character file due to lackness of character point or over-smallness of fingerprint image
+08h: finger doesn’t match
+09h: failed to find the matching finger
+0Ah: failed to combine the character files
+0Bh: addressing PageID is beyond the finger library
+0Ch: error when reading template from library or the template is invalid
+0Dh: error when uploading template
+0Eh: Module can’t receive the following data packages.
+0Fh: error when uploading image
+10h: failed to delete the template
+11h: failed to clear finger library
+13h: wrong password!
+15h: failed to generate the image for the lackness of valid primary image
+18h: error when writing flash
+19h: No definition error
+1Ah: invalid register number
+1Bh: incorrect configuration of register
+1Ch: wrong notepad page number
+1Dh: failed to operate the communication port
