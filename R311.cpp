@@ -27,4 +27,26 @@ uint8_t R311::ReadSysPara()
   uint8_t R311::Empty(); // returns confirmation code. Delete all the templates in the Flash library
   uint8_t R311::Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
   uint8_t R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
+
+  uint8_t sendPackage() { // returns confirmation code
+    uint32_t startTime = millis(); // https://playground.arduino.cc/Code/TimingRollover
+    while(millis() - startTime < BUSYTIMEOUTTIME && R311::Busy()) {} // wait for not Busy()
+    if (system_status_register & 1) return 0xFF; // we timed out waiting for not Busy()
+    _r311Serial.write(0xEF,1); // Header: Fixed value of 0xEF01; High byte transferred first.
+    _r311Serial.write(0x01,1); // Header: Fixed value of 0xEF01; High byte transferred first.
+    _r311Serial.write(module_address >> 24,1);
+    _r311Serial.write(module_address >> 16,1);
+    _r311Serial.write(module_address >> 8,1);
+    _r311Serial.write(module_address,1);
+    _r311Serial.write(pid,1);
+    _r311Serial.write(length >> 8,1);
+    _r311Serial.write(length,1);
+    sum = pid + length; // arithmetic sum of package identifier, package length and all package contents. Overflowing bits are omitted. high byte is transferred first
+    for (int i=0; i<length; i++) { // send the data
+      _r311Serial.write(data[i]);
+      sum += data[i]; // adding to checksum, overflowing is fine
+    }
+    _r311Serial.write(sum >> 8,1);
+    _r311Serial.write(sum,1);
+  }
 #endif // R311
