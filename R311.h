@@ -29,7 +29,7 @@ public:
   HardwareSerial * _r311Serial; // member within class
   R311Package package; // data package returned from reader
 
-  void Init(); // open serial port
+  void Open(); // open serial port
   uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, SECURITY_LEVEL, MODULE_ADDRESS, DATA_PACKAGE_LENGTH, BAUD_RATE_CONTROL
   uint8_t SetSysPara(byte paramNum, byte contents); // returns confirmation code. Set module system’s basic parameter.
   boolean Busy() { ReadSysPara(); return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free

@@ -4,7 +4,7 @@ void R311_isr() // interrupt service routing
 {
 }
 
-void R311::Init(HardwareSerial *serial)
+void R311::Open(HardwareSerial *serial)
 {
   _r311Serial = serial;
   _r311Serial.begin(R311BAUDRATE);
