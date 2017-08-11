@@ -1,10 +1,10 @@
 #pragma once
 
-#define BAUD_RATE_CONTROL       6       // Parameter Number: 4
-byte SECURITY_LEVEL =           3;      // Parameter Number: 5
-byte DATA_PACKAGE_LENGTH =      1;      // Parameter Number: 6
-#define MODULE_PASSWORD         0xFFFFFFFF // default is 0xFFFFFFFF
-#define MODULE_ADDRESS          0xFFFFFFFF // default is 0xFFFFFFFF
+uint16_t BAUD_RATE_CONTROL =    6;      // Parameter Number: 4
+uint16_t SECURITY_LEVEL =       3;      // Parameter Number: 5
+uint16_t DATA_PACKAGE_LENGTH =  1;      // Parameter Number: 6
+uint32_t MODULE_PASSWORD =      0xFFFFFFFF; // default is 0xFFFFFFFF
+uint32_t MODULE_ADDRESS =       0xFFFFFFFF; // default is 0xFFFFFFFF
 
 #define R311BAUDRATE    (9600*BAUD_RATE_CONTROL) // R311 manual, page 4, default baud = 9600 * 6
 
@@ -20,6 +20,7 @@ typedef struct
 
 class R311 {
   uint16_t system_status_register;
+  uint16_t finger_library_size;
 public:
   R311(HardwareSerial *serial) {} // https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
 
@@ -27,9 +28,12 @@ public:
   R311Package package; // data package returned from reader
 
   void Init(); // open serial port
-  uint16_t ReadSysPara(); // query hardware to update system_status_register
-  boolean Busy() { return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free
-  boolean Pass() { return (system_status_register & 2); } // Pass: 1: found the matching finger; 0: wrong finger
-  boolean PWD() { return (system_status_register & 4); } // PWD: 1: Verified device’s handshaking password
-  boolean ImgBufStat() { return (system_status_register & 8); } // ImgBufStat: 1: image buffer contains valid image
+  uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, SECURITY_LEVEL, MODULE_ADDRESS, DATA_PACKAGE_LENGTH, BAUD_RATE_CONTROL
+  uint8_t SetSysPara(byte paramNum, byte contents); // returns confirmation code. Set module system’s basic parameter.
+  boolean Busy() { ReadSysPara(); return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free
+  boolean Pass() { ReadSysPara(); return (system_status_register & 2); } // Pass: 1: found the matching finger; 0: wrong finger
+  boolean PWD() { ReadSysPara(); return (system_status_register & 4); } // PWD: 1: Verified device’s handshaking password
+  boolean ImgBufStat() { ReadSysPara(); return (system_status_register & 8); } // ImgBufStat: 1: image buffer contains valid image
+  uint16_t TempleteNum(); // returns template number. Reads the current valid template number of the Module.
+  uint8_t GenImg(); // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; If there is no finger, returned confirmation code would be “can’t detect finger”
 };
