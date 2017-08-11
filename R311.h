@@ -7,9 +7,11 @@ uint32_t MODULE_PASSWORD =      0xFFFFFFFF; // default is 0xFFFFFFFF
 uint32_t MODULE_ADDRESS =       0xFFFFFFFF; // default is 0xFFFFFFFF
 
 #define R311BAUDRATE    (9600*BAUD_RATE_CONTROL) // R311 manual, page 4, default baud = 9600 * 6
+#define CODE_OK                 00h // command execution complete
+#define CODE_NOFINGER           02h // no finger on the sensor
+#define CODE_NOMATCH            08h // finger doesn’t match
 
-typedef struct
-{
+typedef struct {
 	uint16_t start; // Header: Fixed value of 0xEF01; High byte transferred first.
 	uint32_t adder; // Address: Default value is 0xFFFFFFFF, which can be modified by command. High byte transferred first and at wrong adder value, module will reject to transfer.
 	uint8_t pid;    // Package identifier: 01H Command packet; 02H Data packet; Data packet shall not appear alone in executing processs, must follow command packet or acknowledge packet.  07H Acknowledge packet; 08H End of Data packet.
@@ -35,5 +37,11 @@ public:
   boolean PWD() { ReadSysPara(); return (system_status_register & 4); } // PWD: 1: Verified device’s handshaking password
   boolean ImgBufStat() { ReadSysPara(); return (system_status_register & 8); } // ImgBufStat: 1: image buffer contains valid image
   uint16_t TempleteNum(); // returns template number. Reads the current valid template number of the Module.
-  uint8_t GenImg(); // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; If there is no finger, returned confirmation code would be “can’t detect finger”
+  uint8_t GenImg(); // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; otherwise returns CODE_NOFINGER
+  uint8_t Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
+  uint8_t RegModel(); // returns confirmation code. Combine information of character files from CharBuffer1 and CharBuffer2 and generate a template which is stored into both CharBuffer1 and CharBuffer2
+  uint8_t Store(uint8_t BufferID, uint16_t PageID); // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library
+  uint8_t DeletChar(uint16_t PageID, uint16_t N); // returns confirmation code. Delete a segment (N) of templates of Flash library started from the specified location (or PageID)
+  uint8_t Empty(); // returns confirmation code. Delete all the templates in the Flash library
+  uint8_t Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
 };
