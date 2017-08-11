@@ -1,4 +1,5 @@
 #pragma once
+#include "R311.cpp"
 
 uint16_t BAUD_RATE_CONTROL =    6;      // Parameter Number: 4
 uint16_t SECURITY_LEVEL =       3;      // Parameter Number: 5
