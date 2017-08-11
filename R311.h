@@ -24,6 +24,7 @@ typedef struct {
 class R311 {
   uint16_t system_status_register;
   uint16_t finger_library_size;
+  uint16_t PageID, MatchScore; // populated by Search() function if confirmation code was CODE_OK
 public:
   R311(HardwareSerial *serial) {} // https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
 
@@ -45,4 +46,5 @@ public:
   uint8_t DeletChar(uint16_t PageID, uint16_t N); // returns confirmation code. Delete a segment (N) of templates of Flash library started from the specified location (or PageID)
   uint8_t Empty(); // returns confirmation code. Delete all the templates in the Flash library
   uint8_t Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
+  uint8_t Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
 };
