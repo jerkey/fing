@@ -1,13 +1,7 @@
 #pragma once
 #include "R311.cpp"
 
-uint16_t BAUD_RATE_CONTROL =    6;      // Parameter Number: 4
-uint16_t SECURITY_LEVEL =       3;      // Parameter Number: 5
-uint16_t DATA_PACKAGE_LENGTH =  1;      // Parameter Number: 6
-uint32_t MODULE_PASSWORD =      0xFFFFFFFF; // default is 0xFFFFFFFF
-uint32_t MODULE_ADDRESS =       0xFFFFFFFF; // default is 0xFFFFFFFF
-
-#define R311BAUDRATE    (9600*BAUD_RATE_CONTROL) // R311 manual, page 4, default baud = 9600 * 6
+#define R311BAUDRATE    (9600*baud_rate_control) // R311 manual, page 4, default baud = 9600 * 6
 #define CODE_OK                 0x00 // command execution complete
 #define CODE_NOFINGER           0x02 // no finger on the sensor
 #define CODE_NOMATCH            0x08 // finger doesn’t match
@@ -15,17 +9,20 @@ uint32_t MODULE_ADDRESS =       0xFFFFFFFF; // default is 0xFFFFFFFF
 #define PID_DATA                0x02 // Data packet shall not appear alone in executing processs, must follow command packet or acknowledge packet
 #define PID_ACK                 0x07 // Acknowledge packet
 #define PID_EOT                 0x08 // End of Data packet
-
-typedef struct {
-	uint16_t start; // Header: Fixed value of 0xEF01; High byte transferred first.
-	uint32_t adder; // Address: Default value is 0xFFFFFFFF, which can be modified by command. High byte transferred first and at wrong adder value, module will reject to transfer.
-	uint8_t pid;    // Package identifier: 01H Command packet; 02H Data packet; Data packet shall not appear alone in executing processs, must follow command packet or acknowledge packet.  07H Acknowledge packet; 08H End of Data packet.
-	uint16_t length; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
-        uint8_t data[256]; // It can be commands, data, command’s parameters, acknowledge result, etc. (fingerprint character value, template are all deemed as data);
-	uint16_t sum; // Checksum: The arithmetic sum of package identifier, package length and all package contens. Overflowing bits are omitted. high byte is transferred first.
-} R311Package;
+#define BUSYTIMEOUTTIME         1000 // milliseconds to wait for R311 reader not to be Busy
 
 class R311 {
+private:
+  uint8_t  baud_rate_control =    6;      // Parameter Number 4: baud rate = (9600 * this)
+  uint8_t  security_level =       3;      // Parameter Number 5: 1 = more false acceptances, 5 = more false rejections
+  uint8_t  data_package_length =  1;      // Parameter Number 6: valid 0..3 means 32 bytes, 64 bytes, 128 bytes, 256 bytes respectively
+  uint32_t module_password =      0xFFFFFFFF; // Default is 0xFFFFFFFF, which can be modified by command. High byte transferred first
+  uint32_t module_address =       0xFFFFFFFF; // Default is 0xFFFFFFFF, which can be modified by command. High byte transferred first
+  uint8_t  pid;   // Package identifier: 01H Command packet; 02H Data packet; Data packet shall not appear alone in executing processs, must follow command packet or acknowledge packet.  07H Acknowledge packet; 08H End of Data packet.
+  uint16_t length; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  uint8_t  data[256]; // It can be commands, data, command’s parameters, acknowledge result, etc. (fingerprint character value, template are all deemed as data);
+  uint16_t sum; // Checksum: The arithmetic sum of package identifier, package length and all package contens. Overflowing bits are omitted. high byte is transferred first.
+
   uint16_t system_status_register;
   uint16_t finger_library_size;
   uint16_t PageID, MatchScore; // populated by Search() function if confirmation code was CODE_OK
@@ -33,10 +30,9 @@ public:
   R311(HardwareSerial *serial) {} // https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
 
   HardwareSerial * _r311Serial; // member within class
-  R311Package package; // data package returned from reader
 
   void Open(); // open serial port
-  uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, SECURITY_LEVEL, MODULE_ADDRESS, DATA_PACKAGE_LENGTH, BAUD_RATE_CONTROL
+  uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, security_level, module_address, data_package_length, baud_rate_control
   uint8_t SetSysPara(byte paramNum, byte contents); // returns confirmation code. Set module system’s basic parameter.
   boolean Busy() { ReadSysPara(); return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free
   boolean Pass() { ReadSysPara(); return (system_status_register & 2); } // Pass: 1: found the matching finger; 0: wrong finger
