@@ -8,9 +8,13 @@ uint32_t MODULE_PASSWORD =      0xFFFFFFFF; // default is 0xFFFFFFFF
 uint32_t MODULE_ADDRESS =       0xFFFFFFFF; // default is 0xFFFFFFFF
 
 #define R311BAUDRATE    (9600*BAUD_RATE_CONTROL) // R311 manual, page 4, default baud = 9600 * 6
-#define CODE_OK                 00h // command execution complete
-#define CODE_NOFINGER           02h // no finger on the sensor
-#define CODE_NOMATCH            08h // finger doesn’t match
+#define CODE_OK                 0x00 // command execution complete
+#define CODE_NOFINGER           0x02 // no finger on the sensor
+#define CODE_NOMATCH            0x08 // finger doesn’t match
+#define PID_COMMAND             0x01 // Command packet
+#define PID_DATA                0x02 // Data packet shall not appear alone in executing processs, must follow command packet or acknowledge packet
+#define PID_ACK                 0x07 // Acknowledge packet
+#define PID_EOT                 0x08 // End of Data packet
 
 typedef struct {
 	uint16_t start; // Header: Fixed value of 0xEF01; High byte transferred first.
