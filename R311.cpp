@@ -28,10 +28,9 @@ uint8_t R311::ReadSysPara()
   uint8_t R311::Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
   uint8_t R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
 
-  uint8_t sendPackage() { // returns confirmation code
-    uint32_t startTime = millis(); // https://playground.arduino.cc/Code/TimingRollover
-    while(millis() - startTime < BUSYTIMEOUTTIME && R311::Busy()) {} // wait for not Busy()
-    if (system_status_register & 1) return 0xFF; // we timed out waiting for not Busy()
+  uint8_t sendPackage() { // returns confirmation code TODO: this is not true yet
+    uint8_t isReady = waitForReadiness(true);
+    if (isReady != 0) return isReady; // encountered an error waiting for not busy / serial buffer empty
     _r311Serial.write(0xEF,1); // Header: Fixed value of 0xEF01; High byte transferred first.
     _r311Serial.write(0x01,1); // Header: Fixed value of 0xEF01; High byte transferred first.
     _r311Serial.write(module_address >> 24,1);
@@ -46,7 +45,20 @@ uint8_t R311::ReadSysPara()
       _r311Serial.write(data[i]);
       sum += data[i]; // adding to checksum, overflowing is fine
     }
-    _r311Serial.write(sum >> 8,1);
+    _r311Serial.write(sum >> 8,1); // write checksum, high byte first
     _r311Serial.write(sum,1);
+    isReady = waitForReadiness(false);
+    if (isReady != 0) return isReady; // encountered an error waiting for not busy
+
+  }
+
+  uint8_t waitForReadiness(boolean serialToo) { // wait for not Busy() and (optionally) serial buffer to clear
+    uint32_t startTime = millis(); // https://playground.arduino.cc/Code/TimingRollover
+    while((millis() - startTime < BUSYTIMEOUTTIME && R311::Busy()) || (_r311Serial.available() && serialToo)) {
+      if (_r311Serial.available() && serialToo) _r311Serial.read(); // clear serial buffer if desired
+    }
+    if (_r311Serial.available() && serialToo)    return 0xFD; // we timed out waiting for serial buffer to clear
+    if (system_status_register & 1)              return 0xFE; // we timed out waiting for not Busy()
+    return 0; // success, device is not busy and (optionally) serial buffer is clear
   }
 #endif // R311
