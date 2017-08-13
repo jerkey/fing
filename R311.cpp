@@ -29,7 +29,7 @@ uint8_t  R311::Empty(); // returns confirmation code. Delete all the templates i
 uint8_t  R311::Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
 uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
 
-uint8_t sendPackage() { // returns confirmation code TODO: this is not true yet
+uint8_t sendPackage() { // returns 0 if successful
   uint8_t isReady = waitForReadiness(true); // true means wait for serial buffer to clear too
   if (isReady != 0) return isReady; // encountered an error waiting for not busy / serial buffer empty
   _r311Serial.write(0xEF,1); // Header: Fixed value of 0xEF01; High byte transferred first.
@@ -48,6 +48,7 @@ uint8_t sendPackage() { // returns confirmation code TODO: this is not true yet
   }
   _r311Serial.write(sum >> 8,1); // write checksum, high byte first
   _r311Serial.write(sum,1);
+  return 0; // successfully waited for readiness and sent package
 }
 
 uint8_t waitForReadiness(boolean serialToo) { // wait for not Busy() and (optionally) serial buffer to clear
