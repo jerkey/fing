@@ -5,10 +5,9 @@ void R311_isr() // interrupt service routing
 {
 }
 
-void R311::Open(HardwareSerial *serial)
-{
+void R311::Open(HardwareSerial *serial) {// https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
   _r311Serial = serial;
-  _r311Serial.begin(R311BAUDRATE);
+  _r311Serial->begin(R311BAUDRATE);
   //attachInterrupt(R311_INTERRUPT,R311_isr,RISING);
 }
 
@@ -30,34 +29,32 @@ uint8_t  R311::Empty(); // returns confirmation code. Delete all the templates i
 uint8_t  R311::Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
 uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
 
-uint8_t sendPackage() { // returns 0 if successful
-  uint8_t isReady = waitForReadiness(true); // true means wait for serial buffer to clear too
-  if (isReady != 0) return isReady; // encountered an error waiting for not busy / serial buffer empty
-  _r311Serial.write(0xEF,1); // Header: Fixed value of 0xEF01; High byte transferred first.
-  _r311Serial.write(0x01,1); // Header: Fixed value of 0xEF01; High byte transferred first.
-  _r311Serial.write(module_address >> 24,1);
-  _r311Serial.write(module_address >> 16,1);
-  _r311Serial.write(module_address >> 8,1);
-  _r311Serial.write(module_address,1);
-  _r311Serial.write(pid,1);
-  _r311Serial.write(length >> 8,1);
-  _r311Serial.write(length,1);
+uint8_t R311::sendPackage() { // returns 0
+  _r311Serial->write(0xEF); // Header: Fixed value of 0xEF01; High byte transferred first.
+  _r311Serial->write(0x01); // Header: Fixed value of 0xEF01; High byte transferred first.
+  _r311Serial->write(module_address >> 24);
+  _r311Serial->write(module_address >> 16);
+  _r311Serial->write(module_address >> 8 );
+  _r311Serial->write(module_address      );
+  _r311Serial->write(pid);
+  _r311Serial->write(length >> 8);
+  _r311Serial->write(length);
   sum = pid + length; // arithmetic sum of package identifier, package length and all package contents. Overflowing bits are omitted. high byte is transferred first
-  for (int i=0; i<length; i++) { // send the data
-    _r311Serial.write(data[i]);
+  for (int i=0; i<length - 2; i++) { // send the data (length = data plus 2 bytes of checksum)
+    _r311Serial->write(data[i]);
     sum += data[i]; // adding to checksum, overflowing is fine
   }
-  _r311Serial.write(sum >> 8,1); // write checksum, high byte first
-  _r311Serial.write(sum,1);
-  return 0; // successfully waited for readiness and sent package
+  _r311Serial->write(sum >> 8); // write checksum, high byte first
+  _r311Serial->write(sum);
+  return 0;
 }
 
 uint8_t waitForReadiness(boolean serialToo) { // wait for not Busy() and (optionally) serial buffer to clear
   uint32_t startTime = millis(); // https://playground.arduino.cc/Code/TimingRollover
-  while((millis() - startTime < BUSYTIMEOUTTIME && R311::Busy()) || (_r311Serial.available() && serialToo)) {
-    if (_r311Serial.available() && serialToo) _r311Serial.read(); // clear serial buffer if desired
+  while((millis() - startTime < BUSYTIMEOUTTIME && R311::Busy()) || (_r311Serial->available() && serialToo)) {
+    if (_r311Serial->available() && serialToo) _r311Serial->read(); // clear serial buffer if desired
   }
-  if (_r311Serial.available() && serialToo)    return 0xFD; // we timed out waiting for serial buffer to clear
+  if (_r311Serial->available() && serialToo)    return 0xFD; // we timed out waiting for serial buffer to clear
   if (system_status_register & 1)              return 0xFE; // we timed out waiting for not Busy()
   return 0; // success, device is not busy and (optionally) serial buffer is clear
 }

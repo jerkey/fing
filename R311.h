@@ -13,7 +13,7 @@
 #define BUSYTIMEOUTTIME         1000 // milliseconds to wait for R311 reader not to be Busy
 
 class R311 {
-private:
+public:
   uint8_t  baud_rate_control =    6;      // Parameter Number 4: baud rate = (9600 * this)
   uint8_t  security_level =       3;      // Parameter Number 5: 1 = more false acceptances, 5 = more false rejections
   uint8_t  data_package_length =  1;      // Parameter Number 6: valid 0..3 means 32 bytes, 64 bytes, 128 bytes, 256 bytes respectively
@@ -27,12 +27,10 @@ private:
   uint16_t system_status_register;
   uint16_t finger_library_size;
   uint16_t PageID, MatchScore; // populated by Search() function if confirmation code was CODE_OK
-public:
-  R311(HardwareSerial *serial) {} // https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
 
   HardwareSerial * _r311Serial; // member within class
 
-  void Open(); // open serial port
+  void Open(HardwareSerial *serial); // open serial port
   uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, security_level, module_address, data_package_length, baud_rate_control
   uint8_t SetSysPara(byte paramNum, byte contents); // returns confirmation code. Set module system’s basic parameter.
   boolean Busy() { ReadSysPara(); return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free
