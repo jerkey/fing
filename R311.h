@@ -32,11 +32,11 @@ public:
 
   void Open(HardwareSerial *serial); // open serial port
   uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, security_level, module_address, data_package_length, baud_rate_control
-  uint8_t SetSysPara(byte paramNum, byte contents); // returns confirmation code. Set module system’s basic parameter.
-  boolean Busy() { ReadSysPara(); return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free
-  boolean Pass() { ReadSysPara(); return (system_status_register & 2); } // Pass: 1: found the matching finger; 0: wrong finger
-  boolean PWD() { ReadSysPara(); return (system_status_register & 4); } // PWD: 1: Verified device’s handshaking password
-  boolean ImgBufStat() { ReadSysPara(); return (system_status_register & 8); } // ImgBufStat: 1: image buffer contains valid image
+  uint8_t SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
+  bool Busy() { ReadSysPara(); return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free
+  bool Pass() { ReadSysPara(); return (system_status_register & 2); } // Pass: 1: found the matching finger; 0: wrong finger
+  bool PWD() { ReadSysPara(); return (system_status_register & 4); } // PWD: 1: Verified device’s handshaking password
+  bool ImgBufStat() { ReadSysPara(); return (system_status_register & 8); } // ImgBufStat: 1: image buffer contains valid image
   uint16_t TemplateNum(); // returns template number. Reads the current valid template number of the Module.
   uint8_t GenImg(); // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; otherwise returns CODE_NOFINGER
   uint8_t Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
@@ -46,4 +46,7 @@ public:
   uint8_t Empty(); // returns confirmation code. Delete all the templates in the Flash library
   uint8_t Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
   uint8_t Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
+  uint8_t sendPackage();
+  uint8_t waitForReadiness(bool serialToo);
+  uint8_t receivePackage();
 };

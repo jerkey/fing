@@ -1,9 +1,7 @@
 #include "R311.h"
 #include <HardwareSerial.h>
 #include <Arduino.h>
-void R311_isr() // interrupt service routing
-{
-}
+void R311_isr() {}// interrupt service routing
 
 void R311::Open(HardwareSerial *serial) {// https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
   _r311Serial = serial;
@@ -18,7 +16,7 @@ uint8_t R311::ReadSysPara()
   return confirmationCode;
 }
 
-uint8_t  R311::SetSysPara(byte paramNum, byte contents); // returns confirmation code. Set module system’s basic parameter.
+uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
 uint16_t R311::TemplateNum(); // returns template number. Reads the current valid template number of the Module.
 uint8_t  R311::GenImg(); // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; otherwise returns CODE_NOFINGER
 uint8_t  R311::Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
@@ -49,7 +47,7 @@ uint8_t R311::sendPackage() { // returns 0
   return 0;
 }
 
-uint8_t waitForReadiness(boolean serialToo) { // wait for not Busy() and (optionally) serial buffer to clear
+uint8_t R311::waitForReadiness(bool serialToo) { // wait for not Busy() and (optionally) serial buffer to clear
   uint32_t startTime = millis(); // https://playground.arduino.cc/Code/TimingRollover
   while((millis() - startTime < BUSYTIMEOUTTIME && R311::Busy()) || (_r311Serial->available() && serialToo)) {
     if (_r311Serial->available() && serialToo) _r311Serial->read(); // clear serial buffer if desired
