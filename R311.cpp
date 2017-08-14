@@ -1,5 +1,6 @@
-#ifdef R311 // don't include this file more than once in compilation
-
+#include "R311.h"
+#include <HardwareSerial.h>
+#include <Arduino.h>
 void R311_isr() // interrupt service routing
 {
 }
@@ -60,4 +61,3 @@ uint8_t waitForReadiness(boolean serialToo) { // wait for not Busy() and (option
   if (system_status_register & 1)              return 0xFE; // we timed out waiting for not Busy()
   return 0; // success, device is not busy and (optionally) serial buffer is clear
 }
-#endif // R311

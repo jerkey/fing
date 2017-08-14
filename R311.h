@@ -1,5 +1,6 @@
 #pragma once
-#include "R311.cpp"
+#include <stdint.h>
+#include <HardwareSerial.h>
 
 #define R311BAUDRATE    ((uint32_t)9600*(uint32_t)baud_rate_control) // R311 manual, page 4, default baud = 9600 * 6
 #define CODE_OK                 0x00 // command execution complete
