@@ -11,16 +11,31 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
-    // get incoming byte:
     byte inByte = Serial.read();
   }
-  Serial.println(millis());
-  delay(random(1000));
+  byte returnCode = fingReader.ReadSysPara();
+  printPackageRaw(returnCode); // for debugging
+  delay(100);
 }
 
-void establishContact() {
-  while (Serial.available() <= 0) {
-    Serial.println("0,0,0");   // send an initial string
-    delay(300);
+void printPackageRaw(uint8_t returnCode) {
+  // EF01 FFFFFFFF 07 0003 20 002A  ReadSysPara()=0xC  Length:3  PID:0x7  Data:20  sum:42
+  //  0 1  2 3 4 5  6  7 8  9  A B
+  Serial.print("  returned 0x");
+  Serial.print(returnCode,HEX);
+  Serial.print("  Length:");
+  Serial.print((uint16_t)fingReader.length);
+  Serial.print("  PID:0x");
+  Serial.print((byte)fingReader.pid,HEX);
+  uint16_t actualSum = fingReader.length + fingReader.pid; // we are going to calculate the sum to check
+  Serial.print("  Data:");
+  for (int i=0; i<fingReader.length - 2; i++) {
+    if (fingReader.data[i] < 16) Serial.print("0"); // i shouldn't have to do this but here we are
+    Serial.print(fingReader.data[i],HEX); // stupidly does not pad with zeroes for single-digit hex
+    actualSum += fingReader.data[i]; // calculate the sum to check against reported sum
   }
+  Serial.print("  reported sum:");
+  Serial.print(fingReader.sum);
+  Serial.print("  actual sum:");
+  Serial.println(actualSum);
 }
