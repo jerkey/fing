@@ -9,11 +9,14 @@ void R311::Open(HardwareSerial *serial) {// https://stackoverflow.com/questions/
   //attachInterrupt(R311_INTERRUPT,R311_isr,RISING);
 }
 
-uint8_t R311::ReadSysPara()
-{
-  uint8_t confirmationCode;
-
-  return confirmationCode;
+uint8_t R311::ReadSysPara() {
+  pid = 0x01; // Command packet
+  length = 3; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x0F; // ReadSysPara
+  uint8_t returnCode = sendPackage();
+  if (returnCode != 0) return returnCode; // sendPackage() timed out or failed
+  returnCode = receivePackage();
+  return returnCode; // TODO: check the length and pick out the confirmation code and return that
 }
 
 uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
@@ -55,4 +58,24 @@ uint8_t R311::waitForReadiness(bool serialToo) { // wait for not Busy() and (opt
   if (_r311Serial->available() && serialToo)    return 0xFD; // we timed out waiting for serial buffer to clear
   if (system_status_register & 1)              return 0xFE; // we timed out waiting for not Busy()
   return 0; // success, device is not busy and (optionally) serial buffer is clear
+}
+
+uint8_t R311::receivePackage() { // returns number of bytes received
+  uint8_t packageProgess = 0; // how many bytes have we received
+  length = 32 << data_package_length; // maximum possible package length
+  while (_r311Serial->available() && packageProgess < (length + 9)) {
+    uint8_t inByte = _r311Serial->read();
+#ifdef DEBUG
+    if (inByte < 16) Serial.print("0"); // i shouldn't have to do this but here we are
+    Serial.print(inByte,HEX); // stupidly does not pad with zeroes for single-digit hex
+#endif // DEBUG
+    if (packageProgess == 6) pid = inByte;
+    if (packageProgess == 7) length = (inByte * 256) + 0xFF; // high byte first (conservatively high during this while loop)
+    if (packageProgess == 8) length = (length & 0xFF00) + inByte; // replace low byte
+    if ((packageProgess > 8) && (packageProgess - 9 < length - 2)) data[packageProgess - 9] = inByte;
+    if (packageProgess == length + 9 - 2) sum = inByte * 256; // high byte first
+    if (packageProgess == length + 9 - 1) sum += inByte;
+    packageProgess++;
+  }
+  return packageProgess;
 }
