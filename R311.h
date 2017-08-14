@@ -1,7 +1,7 @@
 #pragma once
 #include "R311.cpp"
 
-#define R311BAUDRATE    (9600*baud_rate_control) // R311 manual, page 4, default baud = 9600 * 6
+#define R311BAUDRATE    ((uint32_t)9600*(uint32_t)baud_rate_control) // R311 manual, page 4, default baud = 9600 * 6
 #define CODE_OK                 0x00 // command execution complete
 #define CODE_NOFINGER           0x02 // no finger on the sensor
 #define CODE_NOMATCH            0x08 // finger doesn’t match
