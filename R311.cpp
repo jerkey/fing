@@ -101,6 +101,10 @@ uint8_t R311::receivePackage() { // returns number of bytes received
     if (packageProgess == length + 9 - 2) sum = inByte * 256; // high byte first
     if (packageProgess == length + 9 - 1) sum += inByte;
     packageProgess++;
+    // check for EF01FFFFFFFF etc.. before proceeding             v
+    // GenImg() E3D0D6B53D39392C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000A
+    if (packageProgess == 1 && inByte != 0xEF) packageProgess = 0; // crude hack to check for header
+    if (packageProgess == 2 && inByte != 0x01) packageProgess = 0; // crude hack to check for header
   }
   return packageProgess;
 }
