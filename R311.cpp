@@ -16,7 +16,15 @@ uint8_t R311::ReadSysPara() {
   uint8_t returnCode = sendPackage();
   if (returnCode != 0) return returnCode; // sendPackage() timed out or failed
   returnCode = receivePackage();
-  return returnCode; // TODO: check the length and pick out the confirmation code and return that
+  // 00 0000000001000003 FFFFFFFF00020006
+  //  0  1 2 3 4 5 6 7 8  9 A B C D E F G
+  returnCode = data[0]; // confirmation code is followed by 16 bytes of data, manual pp10-11
+  system_status_register = data[1] * 256 + data[2]; // TODO: is this the right order?
+  finger_library_size    = data[5] * 256 + data[6]; // TODO: is this the right order?
+  security_level         = data[8];  // security_level is less than a byte so this works...
+  data_package_length    = data[14]; // this seems right
+  baud_rate_control      = data[16]; // this seems right
+  return returnCode; // return confirmation code
 }
 
 uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
