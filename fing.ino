@@ -15,10 +15,13 @@ void loop() {
   }
   byte returnCode = fingReader.ReadSysPara();
   printPackageRaw(returnCode); // for debugging
+  printSSR();
   delay(100);
 }
 
 void printPackageRaw(uint8_t returnCode) {
+  uint16_t actualSum = fingReader.calcChecksum();
+  if (actualSum != fingReader.sum) return; // how about don't display garbage data
   // EF01 FFFFFFFF 07 0003 20 002A  ReadSysPara()=0xC  Length:3  PID:0x7  Data:20  sum:42
   //  0 1  2 3 4 5  6  7 8  9  A B
   Serial.print("  returned 0x");
@@ -35,5 +38,22 @@ void printPackageRaw(uint8_t returnCode) {
   Serial.print("  reported sum:");
   Serial.print(fingReader.sum);
   Serial.print("  actual sum:");
-  Serial.println(fingReader.calcChecksum());
+  Serial.println(actualSum);
+}
+
+void printSSR() { // print status bits from system_status_register
+  Serial.print("SSR:");
+  Serial.print(fingReader.system_status_register);
+  Serial.print("  finger_library_size:");
+  Serial.print(fingReader.finger_library_size);
+  Serial.print("  security_level:");
+  Serial.print(fingReader.security_level);
+  Serial.print("  data_package_length:");
+  Serial.print(32 << fingReader.data_package_length);
+  Serial.print("  status: ");
+  if (fingReader.Busy()) Serial.print("Busy ");
+  if (fingReader.Pass()) Serial.print("Pass ");
+  if (fingReader.PWD()) Serial.print("PWD ");
+  if (fingReader.ImgBufStat()) Serial.print("ImgBufStat ");
+  Serial.println(";");
 }
