@@ -15,7 +15,7 @@ uint8_t R311::ReadSysPara() {
   data[0] = 0x0F; // ReadSysPara
   uint8_t returnCode = sendPackage();
   if (returnCode != 0) return returnCode; // sendPackage() timed out or failed
-  returnCode = receivePackage();
+  if (receivePackage() < 0x1C) return 0xF0; // we should have got 28 bytes total
   // 00 0000000001000003 FFFFFFFF00020006
   //  0  1 2 3 4 5 6 7 8  9 A B C D E F G
   returnCode = data[0]; // confirmation code is followed by 16 bytes of data, manual pp10-11
