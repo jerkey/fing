@@ -29,7 +29,24 @@ uint8_t R311::ReadSysPara() {
 
 uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
 uint16_t R311::TemplateNum(); // returns template number. Reads the current valid template number of the Module.
-uint8_t  R311::GenImg(); // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; otherwise returns CODE_NOFINGER
+
+#define DEBUG
+uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; otherwise returns CODE_NOFINGER
+  pid = 0x01; // Command packet
+  length = 3; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x01; // GenImg
+  uint8_t returnCode = sendPackage();
+  if (returnCode != 0) return returnCode; // sendPackage() timed out or failed
+  returnCode = receivePackage();
+  if (returnCode < 0x0C) {
+    Serial.print("only got this many bytes:");
+    Serial.println(returnCode);
+    return 0xF0; // we should have got 12 bytes total
+  }
+  Serial.print("GI:)");
+  returnCode = data[0]; // confirmation code is the only data, manual pp11-12
+}
+
 uint8_t  R311::Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
 uint8_t  R311::RegModel(); // returns confirmation code. Combine information of character files from CharBuffer1 and CharBuffer2 and generate a template which is stored into both CharBuffer1 and CharBuffer2
 uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID); // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library

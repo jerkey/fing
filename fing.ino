@@ -11,11 +11,17 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
-    byte inByte = Serial.read();
+    char inChar = Serial.read();
+    if (inChar == 'g') {
+      Serial.print("GenImg() ");
+      printPackageRaw(fingReader.GenImg()); // print the returned code and all data
+    }
+    if (inChar == 'r') {
+      Serial.print("ReadSysPara() ");
+      printPackageRaw(fingReader.ReadSysPara()); // print the returned code and all data
+      printSSR();
+    }
   }
-  byte returnCode = fingReader.ReadSysPara();
-  printPackageRaw(returnCode); // for debugging
-  printSSR();
   delay(100);
 }
 
