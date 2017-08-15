@@ -49,4 +49,5 @@ public:
   uint8_t sendPackage();
   uint8_t waitForReadiness(bool serialToo);
   uint8_t receivePackage();
+  uint16_t calcChecksum();
 };

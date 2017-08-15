@@ -79,3 +79,9 @@ uint8_t R311::receivePackage() { // returns number of bytes received
   }
   return packageProgess;
 }
+
+uint16_t R311::calcChecksum() { // returns calculated checksum of whatever package is in RAM
+  uint16_t actualSum = length + pid; // sum includes these and the data
+  for (int i=0; i<length - 2; i++) actualSum += data[i]; // calculate the sum of data too
+  return actualSum;
+}

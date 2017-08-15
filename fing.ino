@@ -27,15 +27,13 @@ void printPackageRaw(uint8_t returnCode) {
   Serial.print((uint16_t)fingReader.length);
   Serial.print("  PID:0x");
   Serial.print((byte)fingReader.pid,HEX);
-  uint16_t actualSum = fingReader.length + fingReader.pid; // we are going to calculate the sum to check
   Serial.print("  Data:");
   for (int i=0; i<fingReader.length - 2; i++) {
     if (fingReader.data[i] < 16) Serial.print("0"); // i shouldn't have to do this but here we are
     Serial.print(fingReader.data[i],HEX); // stupidly does not pad with zeroes for single-digit hex
-    actualSum += fingReader.data[i]; // calculate the sum to check against reported sum
   }
   Serial.print("  reported sum:");
   Serial.print(fingReader.sum);
   Serial.print("  actual sum:");
-  Serial.println(actualSum);
+  Serial.println(fingReader.calcChecksum());
 }
