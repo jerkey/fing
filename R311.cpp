@@ -38,6 +38,12 @@ uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store 
   uint8_t returnCode = sendPackage();
   if (returnCode != 0) return returnCode; // sendPackage() timed out or failed
   returnCode = receivePackage();
+  uint16_t loopCount = 0; // for counting how many receive failures we get
+  while (returnCode < 0x0C && loopCount++ < 50) {
+    if (returnCode < 0x0C) Serial.print("/"); // report a short read (for debugging)
+    returnCode = receivePackage();
+    delay(100); // this makes it actually work
+  }
   if (returnCode < 0x0C) {
     Serial.print("only got this many bytes:");
     Serial.println(returnCode);
