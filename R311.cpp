@@ -49,8 +49,11 @@ uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store 
     Serial.println(returnCode);
     return 0xF0; // we should have got 12 bytes total
   }
-  Serial.print("GI:)");
-  returnCode = data[0]; // confirmation code is the only data, manual pp11-12
+  Serial.print("GI:");
+  if (data[0] == CODE_OK) Serial.print("OK");
+  if (data[0] == CODE_NOFINGER) Serial.print("NOFINGER");
+  if (data[0] == CODE_NOMATCH) Serial.print("NOMATCH");
+  return data[0]; // confirmation code is the only data, manual pp11-12
 }
 
 uint8_t  R311::Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
