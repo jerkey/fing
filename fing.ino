@@ -21,10 +21,13 @@ void loop() {
       printPackageRaw(fingReader.ReadSysPara()); // print the returned code and all data
       printSSR();
     }
+    if (inChar == 't') {
+      Serial.print("TemplateNum() ");
+      printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
+    }
     if (inChar == 'p') {
       Serial.print("receivePackage(1) ");
       printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
-      printSSR();
     }
   }
   delay(100);
