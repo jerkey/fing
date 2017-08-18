@@ -48,6 +48,6 @@ public:
   uint8_t Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
   uint8_t sendPackage();
   uint8_t waitForReadiness(bool serialToo);
-  uint8_t receivePackage();
+  uint16_t receivePackage(uint16_t bytesNeeded);
   uint16_t calcChecksum();
 };

@@ -21,11 +21,16 @@ void loop() {
       printPackageRaw(fingReader.ReadSysPara()); // print the returned code and all data
       printSSR();
     }
+    if (inChar == 'p') {
+      Serial.print("receivePackage(1) ");
+      printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
+      printSSR();
+    }
   }
   delay(100);
 }
 
-void printPackageRaw(uint8_t returnCode) {
+void printPackageRaw(uint16_t returnCode) {
   uint16_t actualSum = fingReader.calcChecksum();
   if (actualSum != fingReader.sum) return; // how about don't display garbage data
   // EF01 FFFFFFFF 07 0003 20 002A  ReadSysPara()=0xC  Length:3  PID:0x7  Data:20  sum:42
