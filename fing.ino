@@ -47,6 +47,10 @@ void loop() {
       Serial.print("RegModel() ");
       printPackageRaw(fingReader.RegModel()); // print the returned code and all data
     }
+    if (inChar == 'e') {
+      Serial.print("Empty() ");
+      printPackageRaw(fingReader.Empty()); // print the returned code and all data
+    }
     if (inChar == 'p') {
       Serial.print("receivePackage(1) ");
       printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
