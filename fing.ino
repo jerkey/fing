@@ -29,6 +29,10 @@ void loop() {
       Serial.print("TemplateNum() ");
       printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
     }
+    if (inChar == 'm') {
+      Serial.print("RegModel() ");
+      printPackageRaw(fingReader.RegModel()); // print the returned code and all data
+    }
     if (inChar == 'p') {
       Serial.print("receivePackage(1) ");
       printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
