@@ -67,7 +67,21 @@ uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store 
   return data[0]; // confirmation code is the only data, manual pp11-12
 }
 
-uint8_t  R311::Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
+uint8_t  R311::Img2Tz(uint8_t BufferID) { // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
+  pid = 0x01; // Command packet
+  length = 4; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x02; // Img2Tz
+  data[1] = BufferID; // choose which charbuffer to store the character file into
+  sendPackage();
+  uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
+  if (bytesReceived != 0x0C) {
+    Serial.print("Img2Tz bytesReceived:");
+    Serial.println(bytesReceived);
+    return 0xF0; // we did not get the expected number of bytes
+  }
+  return data[0]; // confirmation code is the only data, manual p13
+}
+
 uint8_t  R311::RegModel(); // returns confirmation code. Combine information of character files from CharBuffer1 and CharBuffer2 and generate a template which is stored into both CharBuffer1 and CharBuffer2
 uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID); // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library
 uint8_t  R311::DeletChar(uint16_t PageID, uint16_t N); // returns confirmation code. Delete a segment (N) of templates of Flash library started from the specified location (or PageID)

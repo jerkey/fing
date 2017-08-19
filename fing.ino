@@ -21,6 +21,10 @@ void loop() {
       printPackageRaw(fingReader.ReadSysPara()); // print the returned code and all data
       printSSR();
     }
+    if (inChar == 'i') {
+      Serial.print("Img2Tz(1 or 2) "); // call with a 1 or 2 to select which serial buffer
+      printPackageRaw(fingReader.Img2Tz(Serial.read() - 48)); // print the returned code and all data
+    }
     if (inChar == 't') {
       Serial.print("TemplateNum() ");
       printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
