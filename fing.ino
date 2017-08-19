@@ -12,6 +12,38 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     char inChar = Serial.read();
+    if (inChar == '1') { // enroll once
+      Serial.print("GenImg() ");
+      printPackageRaw(fingReader.GenImg()); // print the returned code and all data
+      Serial.print("Img2Tz(1) "); // call with a 1 or 2 to select which serial buffer
+      printPackageRaw(fingReader.Img2Tz(1)); // print the returned code and all data
+    }
+    if (inChar == '2') { // enroll second time and store in first open spot
+      Serial.print("GenImg() ");
+      printPackageRaw(fingReader.GenImg()); // print the returned code and all data
+      Serial.print("Img2Tz(2) "); // call with a 1 or 2 to select which serial buffer
+      printPackageRaw(fingReader.Img2Tz(2)); // print the returned code and all data
+      Serial.print("RegModel() ");
+      printPackageRaw(fingReader.RegModel()); // print the returned code and all data
+      Serial.print("Store(1,TemplateNum()) ");
+      printPackageRaw(fingReader.Store(1,fingReader.TemplateNum())); // print the returned code and all data
+      Serial.print("TemplateNum() ");
+      printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
+    }
+    if (inChar == '3') { // read finger, search for it and identify it
+      Serial.print("GenImg() ");
+      printPackageRaw(fingReader.GenImg()); // print the returned code and all data
+      Serial.print("Img2Tz(1) "); // call with a 1 or 2 to select which serial buffer
+      printPackageRaw(fingReader.Img2Tz(1)); // print the returned code and all data
+      Serial.print("Search(1,1,256) ");
+      fingReader.PageID = 0;
+      fingReader.MatchScore = 0;
+      printPackageRaw(fingReader.Search(1,1,256)); // print the returned code and all data
+      Serial.print("PageID ");
+      Serial.print(fingReader.PageID);
+      Serial.print("  MatchScore ");
+      Serial.println(fingReader.MatchScore);
+    }
     if (inChar == 'g') {
       Serial.print("GenImg() ");
       printPackageRaw(fingReader.GenImg()); // print the returned code and all data
