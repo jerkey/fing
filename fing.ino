@@ -29,6 +29,20 @@ void loop() {
       Serial.print("TemplateNum() ");
       printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
     }
+    if (inChar == 's') {
+      Serial.print("Store(1,parseInt()) ");
+      printPackageRaw(fingReader.Store(1,Serial.parseInt())); // print the returned code and all data
+    }
+    if (inChar == 'f') {
+      Serial.print("Search(1,1,256) ");
+      fingReader.PageID = 0;
+      fingReader.MatchScore = 0;
+      printPackageRaw(fingReader.Search(1,1,256)); // print the returned code and all data
+      Serial.print("PageID ");
+      Serial.print(fingReader.PageID);
+      Serial.print("  MatchScore ");
+      Serial.println(fingReader.MatchScore);
+    }
     if (inChar == 'm') {
       Serial.print("RegModel() ");
       printPackageRaw(fingReader.RegModel()); // print the returned code and all data

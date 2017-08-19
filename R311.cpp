@@ -96,11 +96,46 @@ uint8_t  R311::RegModel() { // returns confirmation code. Combine information of
   return data[0]; // confirmation code is the only data, manual p13
 }
 
-uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID); // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library
+uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID) { // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library
+  pid = 0x01; // Command packet
+  length = 6; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x06; // Store
+  data[1] = BufferID; // choose which charbuffer to store in the library
+  data[2] = PageID >> 8; // high byte first
+  data[3] = PageID & 0xFF;
+  sendPackage();
+  uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
+  if (bytesReceived != 0x0C) {
+    Serial.print("Store bytesReceived:");
+    Serial.println(bytesReceived);
+    return 0xF0; // we did not get the expected number of bytes
+  }
+  return data[0]; // confirmation code is the only data, manual p15
+}
+
 uint8_t  R311::DeletChar(uint16_t PageID, uint16_t N); // returns confirmation code. Delete a segment (N) of templates of Flash library started from the specified location (or PageID)
 uint8_t  R311::Empty(); // returns confirmation code. Delete all the templates in the Flash library
 uint8_t  R311::Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results
-uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum); // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
+uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum) { // returns confirmation code. Search the whole finger library for the template that matches the one in CharBuffer1 or CharBuffer2. If found, PageID and MatchScore are populated
+  pid = 0x01; // Command packet
+  length = 8; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x04; // Search
+  data[1] = BufferID; // choose which charbuffer to store in the library
+  data[2] = StartPage >> 8; // high byte first
+  data[3] = StartPage & 0xFF;
+  data[4] = PageNum >> 8; // high byte first
+  data[5] = PageNum & 0xFF;
+  sendPackage();
+  uint16_t bytesReceived = receivePackage(0x10); // we should have got 16 bytes total
+  if (bytesReceived != 0x10) {
+    Serial.print("Store bytesReceived:");
+    Serial.println(bytesReceived);
+    return 0xF0; // we did not get the expected number of bytes
+  }
+  PageID = data[1] * 256 + data[2];
+  MatchScore = data[3] * 256 + data[4];
+  return data[0]; // confirmation code, manual p17
+}
 
 uint8_t R311::sendPackage() { // returns 0
   _r311Serial->write(0xEF); // Header: Fixed value of 0xEF01; High byte transferred first.
