@@ -87,6 +87,26 @@ void loop() {
       Serial.print("receivePackage(1) ");
       printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
     }
+    if (inChar == '!') {
+      Serial.print("SetSysPara(5,1)"); // set security level
+      printPackageRaw(fingReader.SetSysPara(5,1)); // set security level
+    }
+    if (inChar == '@') {
+      Serial.print("SetSysPara(5,2)"); // set security level
+      printPackageRaw(fingReader.SetSysPara(5,2)); // set security level
+    }
+    if (inChar == '#') {
+      Serial.print("SetSysPara(5,3)"); // set security level
+      printPackageRaw(fingReader.SetSysPara(5,3)); // set security level
+    }
+    if (inChar == '$') {
+      Serial.print("SetSysPara(5,4)"); // set security level
+      printPackageRaw(fingReader.SetSysPara(5,4)); // set security level
+    }
+    if (inChar == '%') {
+      Serial.print("SetSysPara(5,5)"); // set security level
+      printPackageRaw(fingReader.SetSysPara(5,5)); // set security level
+    }
   }
   delay(100);
 }

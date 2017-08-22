@@ -31,7 +31,22 @@ uint8_t R311::ReadSysPara() { // return confirmation code or 0xF0 for receive da
   return returnCode; // return confirmation code
 }
 
-uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
+uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents) { // returns confirmation code. Set module system’s basic parameter.
+  pid = 0x01; // Command packet
+  length = 5; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x0E; // SetSysPara
+  data[1] = paramNum;
+  data[2] = contents;
+  sendPackage();
+  uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
+  if (bytesReceived != 0x0C) {
+    Serial.print("SetSysPara bytesReceived:");
+    Serial.println(bytesReceived);
+    return 0xF0;
+  }
+  uint8_t returnCode = data[0]; // confirmation code only, pp9-10
+  return returnCode; // return confirmation code
+}
 
 uint16_t R311::TemplateNum() { // returns template number. Reads the current valid template number of the Module.
   pid = 0x01; // Command packet

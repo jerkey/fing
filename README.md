@@ -19,14 +19,23 @@ Img2Tz(1 or 2) //////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  
 Search(1,1,256) /EF01FFFFFFFF07000709000000000017  returned 0x9  Length:7  PID:0x7  Data:0900000000  reported sum:23  actual sum:23
 PageID 0  MatchScore 0
 TemplateNum() /EF01FFFFFFFF070005000002000E  returned 0x2  Length:5  PID:0x7  Data:000002  reported sum:14  actual sum:14
-GenImg() ///E3D0D6B53D39382C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000AGI:OK  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-Img2Tz(1 or 2) ///////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-GenImg() ///E3D0D6B53D39312C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000AGI:OK  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-Img2Tz(1 or 2) ///////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-RegModel() /EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-Store(1,parseInt()) //EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-TemplateNum() /EF01FFFFFFFF070005000002000E  returned 0x2  Length:5  PID:0x7  Data:000002  reported sum:14  actual sum:14
-GenImg() ///E3D0D6B53D39312C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000AGI:OK  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-Img2Tz(1 or 2) ///////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
-Search(1,1,256) /EF01FFFFFFFF070007000011006F008E  returned 0x0  Length:7  PID:0x7  Data:000011006F  reported sum:142  actual sum:142
-PageID 17  MatchScore 111
+
+  1
+  GenImg() ///E3D0D6B53D39382C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000AGI:OK  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  Img2Tz(1 or 2) ///////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+
+  2
+  GenImg() ///E3D0D6B53D39312C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000AGI:OK  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  Img2Tz(1 or 2) ///////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  RegModel() /EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  Store(1,TemplateNum()+1) //EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  TemplateNum() /EF01FFFFFFFF070005000002000E  returned 0x2  Length:5  PID:0x7  Data:000002  reported sum:14  actual sum:14
+
+  3
+  GenImg() ///E3D0D6B53D39312C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000AGI:OK  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  Img2Tz(1) ///////EF01FFFFFFFF07000300000A  returned 0x0  Length:3  PID:0x7  Data:00  reported sum:10  actual sum:10
+  Search(1,1,256) /EF01FFFFFFFF070007000011006F008E  returned 0x0  Length:7  PID:0x7  Data:000011006F  reported sum:142  actual sum:142
+  PageID 17  MatchScore 111
+
+  e
+  Empty() 
