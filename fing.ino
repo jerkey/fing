@@ -26,7 +26,7 @@ void loop() {
       Serial.print("RegModel() ");
       printPackageRaw(fingReader.RegModel()); // print the returned code and all data
       Serial.print("Store(1,TemplateNum()) ");
-      printPackageRaw(fingReader.Store(1,fingReader.TemplateNum())); // print the returned code and all data
+      printPackageRaw(fingReader.Store(1,fingReader.TemplateNum()+1)); // RECORDS START WITH 1 NOT ZERO
       Serial.print("TemplateNum() ");
       printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
     }

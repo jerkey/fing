@@ -117,6 +117,7 @@ uint8_t  R311::RegModel() { // returns confirmation code. Combine information of
 }
 
 uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID) { // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library
+  // FIRST RECORD IS AT 1 NOT ZERO
   pid = 0x01; // Command packet
   length = 6; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
   data[0] = 0x06; // Store
@@ -223,6 +224,7 @@ uint16_t R311::receivePackage(uint16_t bytesNeeded) { // returns # of bytes rece
       // GenImg() E3D0D6B53D39392C205765743D33322C204472793D3332200AEF01FFFFFFFF07000300000A
       if (packageProgess == 1 && inByte != 0xEF) packageProgess = 0; // crude hack to check for header
       if (packageProgess == 2 && inByte != 0x01) packageProgess = 0; // crude hack to check for header
+      delay(1); // avoid quitting early during serial reception
     }
     if (packageProgess < bytesNeeded) {
       Serial.print("/"); // report a short read (for debugging)
