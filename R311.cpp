@@ -93,6 +93,11 @@ uint8_t  R311::RegModel() { // returns confirmation code. Combine information of
     Serial.println(bytesReceived);
     return 0xF0; // we did not get the expected number of bytes
   }
+  if (data[0] != 0) {
+    Serial.print("RegModel ERROR: ");
+    if (data[0] == 0x0A) { Serial.println("failed to combine the character files"); }
+    else { Serial.print("0x"); Serial.println(data[0],HEX); }
+  }
   return data[0]; // confirmation code is the only data, manual p13
 }
 
