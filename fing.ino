@@ -27,7 +27,7 @@ void loop() {
       printPackageRaw(fingReader.Img2Tz(2)); // print the returned code and all data
       Serial.print("RegModel() ");
       printPackageRaw(fingReader.RegModel()); // print the returned code and all data
-      Serial.print("Store(1,TemplateNum()) ");
+      Serial.print("Store(1,TemplateNum()+1) ");
       printPackageRaw(fingReader.Store(1,fingReader.TemplateNum()+1)); // RECORDS START WITH 1 NOT ZERO
       Serial.print("TemplateNum() = ");
       Serial.println(fingReader.TemplateNum()); // print the template number
@@ -85,7 +85,7 @@ void loop() {
       Serial.print("RegModel() ");
       printPackageRaw(fingReader.RegModel()); // print the returned code and all data
     }
-    if (inChar == 'e') {
+    if (inChar == 'E') {
       Serial.print("Empty() ");
       printPackageRaw(fingReader.Empty()); // print the returned code and all data
     }
