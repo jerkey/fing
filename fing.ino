@@ -122,7 +122,6 @@ void loop() {
       }
     } // scan for finger
   } // no serial available
-  delay(100);
 }
 
 void printPackageRaw(uint16_t returnCode) {
