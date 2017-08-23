@@ -89,6 +89,10 @@ void loop() {
       Serial.print("Empty() ");
       printPackageRaw(fingReader.Empty()); // print the returned code and all data
     }
+    if (inChar == 'd') {
+      Serial.print("DeletChar(parseInt(),1)");
+      printPackageRaw(fingReader.DeletChar(Serial.parseInt(),1)); // print the returned code and all data
+    }
     if (inChar == 'p') {
       Serial.print("receivePackage(1) ");
       printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
