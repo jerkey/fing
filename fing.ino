@@ -1,4 +1,5 @@
 #include "R311.h"
+#include "R311codes.h" // for translating error numbers to text
 
 R311 fingReader;
 
@@ -28,8 +29,8 @@ void loop() {
       printPackageRaw(fingReader.RegModel()); // print the returned code and all data
       Serial.print("Store(1,TemplateNum()) ");
       printPackageRaw(fingReader.Store(1,fingReader.TemplateNum()+1)); // RECORDS START WITH 1 NOT ZERO
-      Serial.print("TemplateNum() ");
-      printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
+      Serial.print("TemplateNum() = ");
+      Serial.println(fingReader.TemplateNum()); // print the template number
     }
     if (inChar == '3') { // read finger, search for it and identify it
       Serial.print("GenImg() ");
@@ -59,8 +60,12 @@ void loop() {
       printPackageRaw(fingReader.Img2Tz(Serial.read() - 48)); // print the returned code and all data
     }
     if (inChar == 't') {
-      Serial.print("TemplateNum() ");
-      printPackageRaw(fingReader.TemplateNum()); // print the returned code and all data
+      Serial.print("TemplateNum() = ");
+      Serial.println(fingReader.TemplateNum()); // print the template number
+    }
+    if (inChar == '`') { // translate error number to text
+      printErrorTextString(Serial.parseInt());
+      Serial.println();
     }
     if (inChar == 's') {
       Serial.print("Store(1,parseInt()) ");
@@ -129,8 +134,10 @@ void printPackageRaw(uint16_t returnCode) {
   if (actualSum != fingReader.sum) return; // how about don't display garbage data
   // EF01 FFFFFFFF 07 0003 20 002A  ReadSysPara()=0xC  Length:3  PID:0x7  Data:20  sum:42
   //  0 1  2 3 4 5  6  7 8  9  A B
-  Serial.print("  returned 0x");
-  Serial.print(returnCode,HEX);
+  if (returnCode != 0) {
+    Serial.print("ERROR: ");
+    printErrorTextString(returnCode);
+  }
   Serial.print("  Length:");
   Serial.print((uint16_t)fingReader.length);
   Serial.print("  PID:0x");

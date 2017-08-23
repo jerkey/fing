@@ -115,13 +115,6 @@ uint8_t  R311::RegModel() { // returns confirmation code. Combine information of
 #endif
     return 0xF0; // we did not get the expected number of bytes
   }
-#ifdef DEBUG
-  if (data[0] != 0) {
-    Serial.print("RegModel ERROR: ");
-    if (data[0] == 0x0A) { Serial.println("failed to combine the character files"); }
-    else { Serial.print("0x"); Serial.println(data[0],HEX); }
-  }
-#endif
   return data[0]; // confirmation code is the only data, manual p13
 }
 
@@ -183,14 +176,6 @@ uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum) { 
   }
   PageID = data[1] * 256 + data[2];
   MatchScore = data[3] * 256 + data[4];
-#ifdef DEBUG
-  if (data[0] == CODE_NOTFOUND) { Serial.println("Search (): failed to find the matching finger"); }
-  else if (data[0] == CODE_DATAERROR) { Serial.println("Search (): error when receiving data package"); }
-  else if (data[0] != CODE_OK) {
-    Serial.print("Search() ERROR 0x");
-    Serial.println(data[0],HEX);
-  }
-#endif
   return data[0]; // confirmation code, manual p17
 }
 
@@ -235,7 +220,7 @@ uint16_t R311::receivePackage(uint16_t bytesNeeded) { // returns # of bytes rece
 #ifdef DEBUG
       if (inByte < 16) Serial.print("0"); // i shouldn't have to do this but here we are
       Serial.print(inByte,HEX); // stupidly does not pad with zeroes for single-digit hex
-#endif // DEBUG
+#endif
       if (packageProgess == 6) pid = inByte;
       if (packageProgess == 7) length = (inByte * 256) + 0xFF; // high byte first (conservatively high during this while loop)
       if (packageProgess == 8) length = (length & 0xFF00) + inByte; // replace low byte
