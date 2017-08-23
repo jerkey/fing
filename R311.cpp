@@ -16,8 +16,10 @@ uint8_t R311::ReadSysPara() { // return confirmation code or 0xF0 for receive da
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x1C); // we should have got 28 bytes total
   if (bytesReceived != 0x1C) {
+#ifdef DEBUG
     Serial.print("ReadSysPara bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0;
   }
   // 00 0000000001000003 FFFFFFFF00020006
@@ -40,8 +42,10 @@ uint8_t  R311::SetSysPara(uint8_t paramNum, uint8_t contents) { // returns confi
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
   if (bytesReceived != 0x0C) {
+#ifdef DEBUG
     Serial.print("SetSysPara bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0;
   }
   uint8_t returnCode = data[0]; // confirmation code only, pp9-10
@@ -55,8 +59,10 @@ uint16_t R311::TemplateNum() { // returns template number. Reads the current val
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0E); // we should have got 14 bytes total
   if (bytesReceived != 0x0E) {
+#ifdef DEBUG
     Serial.print("TemplateNum bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0;
   }
   uint16_t template_number = data[1] * 256 + data[2]; // TODO: is this the right order?
@@ -70,8 +76,10 @@ uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store 
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
   if (bytesReceived != 0x0C) {
+#ifdef DEBUG
     Serial.print("GenImg bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0; // we did not get the expected number of bytes
   }
   return data[0]; // confirmation code is the only data, manual pp11-12
@@ -85,8 +93,10 @@ uint8_t  R311::Img2Tz(uint8_t BufferID) { // returns confirmation code. Generate
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
   if (bytesReceived != 0x0C) {
+#ifdef DEBUG
     Serial.print("Img2Tz bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0; // we did not get the expected number of bytes
   }
   return data[0]; // confirmation code is the only data, manual p13
@@ -99,15 +109,19 @@ uint8_t  R311::RegModel() { // returns confirmation code. Combine information of
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
   if (bytesReceived != 0x0C) {
+#ifdef DEBUG
     Serial.print("RegModel bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0; // we did not get the expected number of bytes
   }
+#ifdef DEBUG
   if (data[0] != 0) {
     Serial.print("RegModel ERROR: ");
     if (data[0] == 0x0A) { Serial.println("failed to combine the character files"); }
     else { Serial.print("0x"); Serial.println(data[0],HEX); }
   }
+#endif
   return data[0]; // confirmation code is the only data, manual p13
 }
 
@@ -122,8 +136,10 @@ uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID) { // returns confirmatio
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
   if (bytesReceived != 0x0C) {
+#ifdef DEBUG
     Serial.print("Store bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0; // we did not get the expected number of bytes
   }
   return data[0]; // confirmation code is the only data, manual p15
@@ -137,8 +153,10 @@ uint8_t  R311::Empty() { // returns confirmation code. Delete all the templates 
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
   if (bytesReceived != 0x0C) {
+#ifdef DEBUG
     Serial.print("Empty bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0; // we did not get the expected number of bytes
   }
   return data[0]; // confirmation code is the only data, manual p16
@@ -157,18 +175,22 @@ uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum) { 
   sendPackage();
   uint16_t bytesReceived = receivePackage(0x10); // we should have got 16 bytes total
   if (bytesReceived != 0x10) {
+#ifdef DEBUG
     Serial.print("Store bytesReceived:");
     Serial.println(bytesReceived);
+#endif
     return 0xF0; // we did not get the expected number of bytes
   }
   PageID = data[1] * 256 + data[2];
   MatchScore = data[3] * 256 + data[4];
+#ifdef DEBUG
   if (data[0] == CODE_NOTFOUND) { Serial.println("Search (): failed to find the matching finger"); }
   else if (data[0] == CODE_DATAERROR) { Serial.println("Search (): error when receiving data package"); }
   else if (data[0] != CODE_OK) {
     Serial.print("Search() ERROR 0x");
     Serial.println(data[0],HEX);
   }
+#endif
   return data[0]; // confirmation code, manual p17
 }
 
