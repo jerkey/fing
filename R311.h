@@ -4,8 +4,10 @@
 
 #define R311BAUDRATE    ((uint32_t)9600*(uint32_t)baud_rate_control) // R311 manual, page 4, default baud = 9600 * 6
 #define CODE_OK                 0x00 // command execution complete
+#define CODE_DATAERROR          0x01 // error when receiving data package
 #define CODE_NOFINGER           0x02 // no finger on the sensor
 #define CODE_NOMATCH            0x08 // finger doesn’t match
+#define CODE_NOTFOUND           0x09 // failed to find the matching finger
 #define PID_COMMAND             0x01 // Command packet
 #define PID_DATA                0x02 // Data packet shall not appear alone in executing processs, must follow command packet or acknowledge packet
 #define PID_ACK                 0x07 // Acknowledge packet

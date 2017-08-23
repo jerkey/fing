@@ -63,7 +63,6 @@ uint16_t R311::TemplateNum() { // returns template number. Reads the current val
   return template_number; // return template number
 }
 
-#define DEBUG
 uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store the detected finger image in ImageBuffer; otherwise returns CODE_NOFINGER
   pid = 0x01; // Command packet
   length = 3; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
@@ -75,10 +74,6 @@ uint8_t  R311::GenImg() { // returns confirmation code. Detect finger and store 
     Serial.println(bytesReceived);
     return 0xF0; // we did not get the expected number of bytes
   }
-  Serial.print("GI:");
-  if (data[0] == CODE_OK) Serial.print("OK");
-  if (data[0] == CODE_NOFINGER) Serial.print("NOFINGER");
-  if (data[0] == CODE_NOMATCH) Serial.print("NOMATCH");
   return data[0]; // confirmation code is the only data, manual pp11-12
 }
 
@@ -168,6 +163,12 @@ uint8_t  R311::Search(uint8_t BufferID, uint16_t StartPage, uint16_t PageNum) { 
   }
   PageID = data[1] * 256 + data[2];
   MatchScore = data[3] * 256 + data[4];
+  if (data[0] == CODE_NOTFOUND) { Serial.println("Search (): failed to find the matching finger"); }
+  else if (data[0] == CODE_DATAERROR) { Serial.println("Search (): error when receiving data package"); }
+  else if (data[0] != CODE_OK) {
+    Serial.print("Search() ERROR 0x");
+    Serial.println(data[0],HEX);
+  }
   return data[0]; // confirmation code, manual p17
 }
 
@@ -227,7 +228,9 @@ uint16_t R311::receivePackage(uint16_t bytesNeeded) { // returns # of bytes rece
       delay(1); // avoid quitting early during serial reception
     }
     if (packageProgess < bytesNeeded) {
+#ifdef DEBUG
       Serial.print("/"); // report a short read (for debugging)
+#endif
       delay(100); // this makes it actually work
     }
     if (loopCount++ > 50) packageProgess = 0xF000; // leave the while loop after 5 seconds of fail
