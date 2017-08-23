@@ -5,7 +5,8 @@ R311 fingReader;
 void setup() {
   Serial.begin(57600); // USB virtual comm port, talking to computer
   while (!Serial) {} // wait for serial port to connect. Needed for native USB port only
-  Serial.println("native USB port reporting for communications");
+  Serial.println("fingerprint reader R311 test");
+  Serial.println("https://github.com/jerkey/fing");
   fingReader.Open(&Serial1); // hardware serial port, talking to fingerprint reader
 }
 
@@ -107,7 +108,20 @@ void loop() {
       Serial.print("SetSysPara(5,5)"); // set security level
       printPackageRaw(fingReader.SetSysPara(5,5)); // set security level
     }
-  }
+  } else { // no serial available
+    if (fingReader.GenImg() == CODE_OK) { // found a finger
+      if (fingReader.Img2Tz(1) == CODE_OK) { // successfully interpreted it
+        fingReader.PageID = 0;
+        fingReader.MatchScore = 0;
+        if (fingReader.Search(1,1,256) == 0) { // print the returned data
+          Serial.print("PageID ");
+          Serial.print(fingReader.PageID);
+          Serial.print("  MatchScore ");
+          Serial.println(fingReader.MatchScore);
+        }
+      }
+    } // scan for finger
+  } // no serial available
   delay(100);
 }
 
