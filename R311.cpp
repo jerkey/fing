@@ -1,9 +1,19 @@
 #include "R311.h"
+
+#ifdef SOFTSERIAL
+#include <SoftwareSerial.h>
+#else
 #include <HardwareSerial.h>
+#endif
+
 #include <Arduino.h>
 void R311_isr() {}// interrupt service routing
 
+#ifdef SOFTSERIAL
+void R311::Open(SoftwareSerial *serial) {// https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
+#else
 void R311::Open(HardwareSerial *serial) {// https://stackoverflow.com/questions/7455570/how-to-pass-serial-object-by-reference-to-my-class-in-arduino
+#endif
   _r311Serial = serial;
   _r311Serial->begin(R311BAUDRATE);
   //attachInterrupt(R311_INTERRUPT,R311_isr,RISING);

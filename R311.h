@@ -1,6 +1,13 @@
+#define SOFTSERIAL
+
 #pragma once
 #include <stdint.h>
+
+#ifdef SOFTSERIAL
+#include <SoftwareSerial.h>
+#else
 #include <HardwareSerial.h>
+#endif
 
 #define R311BAUDRATE    ((uint32_t)9600*(uint32_t)baud_rate_control) // R311 manual, page 4, default baud = 9600 * 6
 #define CODE_OK                 0x00 // command execution complete
@@ -30,9 +37,14 @@ public:
   uint16_t finger_library_size;
   uint16_t PageID, MatchScore; // populated by Search() function if confirmation code was CODE_OK
 
+#ifdef SOFTSERIAL
+  SoftwareSerial * _r311Serial; // member within class
+  void Open(SoftwareSerial *serial); // open serial port
+#else
   HardwareSerial * _r311Serial; // member within class
-
   void Open(HardwareSerial *serial); // open serial port
+#endif
+
   uint8_t ReadSysPara(); // returns confirmation code. Query hardware to update system_status_register, finger_library_size, security_level, module_address, data_package_length, baud_rate_control
   uint8_t SetSysPara(uint8_t paramNum, uint8_t contents); // returns confirmation code. Set module system’s basic parameter.
   bool Busy() { return (system_status_register & 1); } // Busy: 1: system is executing commands; 0: system is free

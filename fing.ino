@@ -1,6 +1,11 @@
 #include "R311.h"
 #include "R311codes.h" // for translating error numbers to text
 
+#ifdef SOFTSERIAL
+#include <SoftwareSerial.h>
+  SoftwareSerial SoftSerial(10, 11); // RX, TX
+#endif
+
 R311 fingReader;
 
 void setup() {
@@ -8,7 +13,11 @@ void setup() {
   while (!Serial) {} // wait for serial port to connect. Needed for native USB port only
   Serial.println("fingerprint reader R311 test");
   Serial.println("https://github.com/jerkey/fing");
+#ifdef SOFTSERIAL
+  fingReader.Open(&SoftSerial); // software serial port, talking to fingerprint reader
+#else
   fingReader.Open(&Serial1); // hardware serial port, talking to fingerprint reader
+#endif
 }
 
 void loop() {
