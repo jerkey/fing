@@ -148,6 +148,26 @@ uint8_t  R311::Store(uint8_t BufferID, uint16_t PageID) { // returns confirmatio
   return data[0]; // confirmation code is the only data, manual p15
 }
 
+uint8_t R311::LoadChar(uint8_t BufferID, uint16_t PageID) { // returns confirmation code. load template at the specified location (PageID) of Flash library to template buffer CharBuffer1/CharBuffer2
+  // FIRST RECORD IS AT 1 NOT ZERO
+  pid = 0x01; // Command packet
+  length = 6; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.
+  data[0] = 0x07; // LoadChar
+  data[1] = BufferID; // choose which charbuffer to store in the library
+  data[2] = PageID >> 8; // high byte first
+  data[3] = PageID & 0xFF;
+  sendPackage();
+  uint16_t bytesReceived = receivePackage(0x0C); // we should have got 12 bytes total
+  if (bytesReceived != 0x0C) {
+#ifdef DEBUG
+    Serial.print("LoadChar bytesReceived:");
+    Serial.println(bytesReceived);
+#endif
+    return 0xF0; // we did not get the expected number of bytes
+  }
+  return data[0]; // confirmation code is the only data, manual p15
+}
+
 uint8_t  R311::DeletChar(uint16_t PageID, uint16_t N) { // returns confirmation code. Delete a segment (N) of templates of Flash library started from the specified location (or PageID)
   pid = 0x01; // Command packet
   length = 7; // length of package content (command packets and data packets) plus the length of Checksum (2 bytes). Unit is byte. Max length is 256 bytes. And high byte is transferred first.

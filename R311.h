@@ -56,6 +56,7 @@ public:
   uint8_t Img2Tz(uint8_t BufferID); // returns confirmation code. Generate character file from the original finger image in ImageBuffer and store the file in CharBuffer1 or CharBuffer2
   uint8_t RegModel(); // returns confirmation code. Combine information of character files from CharBuffer1 and CharBuffer2 and generate a template which is stored into both CharBuffer1 and CharBuffer2
   uint8_t Store(uint8_t BufferID, uint16_t PageID); // returns confirmation code. Store the template of specified buffer (Buffer1/Buffer2) at the designated location in Flash library
+  uint8_t LoadChar(uint8_t BufferID, uint16_t PageID); // returns confirmation code. load template at the specified location (PageID) of Flash library to template buffer CharBuffer1/CharBuffer2
   uint8_t DeletChar(uint16_t PageID, uint16_t N); // returns confirmation code. Delete a segment (N) of templates of Flash library started from the specified location (or PageID)
   uint8_t Empty(); // returns confirmation code. Delete all the templates in the Flash library
   uint8_t Match(); // returns confirmation code. Carry out precise matching of two finger templates from CharBuffer1 and CharBuffer2, providing matching results

@@ -102,6 +102,10 @@ void loop() {
       Serial.print("DeletChar(parseInt(),1)");
       printPackageRaw(fingReader.DeletChar(Serial.parseInt(),1)); // print the returned code and all data
     }
+    if (inChar == 'l') {
+      Serial.print("LoadChar(1,parseInt())");
+      printPackageRaw(fingReader.LoadChar(1,Serial.parseInt())); // print the returned code and all data
+    }
     if (inChar == 'p') {
       Serial.print("receivePackage(1) ");
       printPackageRaw(fingReader.receivePackage(1)); // print the returned code and all data
